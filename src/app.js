@@ -6,10 +6,9 @@ const fs = require('fs');
 const PORT = process.env.PORT || process.env.NODE_PORT || 3000;
 
 const handler = (req, res) => {
- 
-   // read the html
+    // read the html
   fs.readFile(`${__dirname}/../client/index.html`, (err, data) => {
-    // if err, throw it for now
+        // if err, throw it for now
     if (err) {
       throw err;
     }
@@ -30,10 +29,14 @@ io.on('connection', (sock) => {
   socket.square = {
     hash: xxh.h32(`${socket.id}${new Date().getTime()}`, 0xCAFEBABE).toString(16),
     lastUpdate: new Date().getTime(),
+
+    camX: 0,
+    camY: 0,
     x: 0,
     y: 0,
     prevX: 0,
     prevY: 0,
+
     destX: 0,
     destY: 0,
     alpha: 0,
@@ -54,7 +57,7 @@ io.on('connection', (sock) => {
     socket.square = data;
     socket.square.lastUpdate = new Date().getTime();
 
-    // io.sockets.in('room1').emit('updatedMovement', socket.square);
+        // io.sockets.in('room1').emit('updatedMovement', socket.square);
     socket.broadcast.to('room1').emit('updatedMovement', socket.square);
   });
 
@@ -73,4 +76,3 @@ io.on('connection', (sock) => {
     socket.leave('room1');
   });
 });
- 
