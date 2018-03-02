@@ -19,12 +19,39 @@ const handler = (req, res) => {
 
 const app = http.createServer(handler);
 const io = socketio(app);
+const timeToDraw = 20000;
 
+let destTime; // When this match is over
+let baseTime;
+let initialized = false;
+
+let curAnimal = 'An Elephant';
+const animals = ['A Sark', 'An Oyster', 'A Whale', 'An Elephant', 'A Penguin', 'A Pig'];
 app.listen(PORT);
+
+const init = () => {
+  baseTime = new Date().getTime();
+  destTime = baseTime + timeToDraw;
+  initialized = true;
+};
+
+const getRandomAnimal = () => {
+  const copy = animals.slice(0);
+  const index = copy.indexOf(curAnimal);
+  copy.splice(index, 1);
+
+
+  return copy[copy.length * Math.random() | 0];
+};
+
 
 io.on('connection', (sock) => {
   const socket = sock;
   socket.join('room1');
+
+  if (!initialized) {
+    init();
+  }
 
   socket.square = {
     hash: xxh.h32(`${socket.id}${new Date().getTime()}`, 0xCAFEBABE).toString(16),
@@ -51,14 +78,26 @@ io.on('connection', (sock) => {
     height: 0,
   };
 
-  socket.emit('joined', socket.square);
+  socket.emit('joined', socket.square, curAnimal);
 
   socket.on('movementUpdate', (data) => {
     socket.square = data;
     socket.square.lastUpdate = new Date().getTime();
 
-        // io.sockets.in('room1').emit('updatedMovement', socket.square);
+
     socket.broadcast.to('room1').emit('updatedMovement', socket.square);
+
+
+    // Update time
+    const curTime = destTime - new Date().getTime();
+    io.sockets.in('room1').emit('updateTime', curTime);
+
+    if (Math.floor(curTime / 1000) <= 0) {
+      baseTime = new Date().getTime();
+      destTime = baseTime + timeToDraw;
+      curAnimal = getRandomAnimal();
+      io.sockets.in('room1').emit('reset', curAnimal);
+    }
   });
 
   socket.on('draw', (data) => {

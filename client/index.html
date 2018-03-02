@@ -19,7 +19,7 @@
               
             margin-left: 35px;
           }
-         canvas {
+         .canvas {
             margin-left: 35px;
             border: 1px solid black; 
          }
@@ -35,9 +35,9 @@
          "use strict";
          
          let canvas;
-         let result;
+         let result; 
          let ctx;
-         let rctx;
+         let rctx; 
          //our websocket connection
          let socket; 
          let hash;
@@ -50,7 +50,8 @@
          let mouse = {};
          let draws = {};
          let myColor;
-         let mouseState = false;
+         let mouseState = false; 
+
          
          const update = (data) => {
            if(!squares[data.hash]) {
@@ -80,10 +81,13 @@
            }
          };
          
-         const setUser = (data) => {
+         const setUser = (data, animal) => {
            hash = data.hash;
            squares[hash] = data;
            requestAnimationFrame(redraw);
+             
+            // Update the current animal if already in process
+             document.querySelector("#animal").innerHTML = "Draw: " + animal;
          };
          
          
@@ -125,7 +129,7 @@
            }
               
             square.camX = square.x;
-             square.camY = square.y;
+            square.camY = square.y;
              
           
              
@@ -140,13 +144,12 @@
              }
           
            square.alpha = 0.05;
-             
-           //moved to sendWithLag
-           //socket.emit('movementUpdate', square);
-         };
+              
+    };
 
     const drawBorder = () =>
     {
+        // draw a dotted line around the draw area
          ctx.save();
          ctx.setLineDash([5.15]); 
          ctx.beginPath();
@@ -158,20 +161,10 @@
          ctx.closePath();
          ctx.stroke();
          ctx.restore();
-    }
-         
-    const redraw = (time) => {
-         updatePosition();
-         const mySquare = squares[hash];
-         
-         ctx.clearRect(0, 0, 500, 500);
-        
-        ctx.save()
-        ctx.translate(-mySquare.camX + canvas.width/2, -mySquare.camY + canvas.height/2);
-             
-        drawBorder();
-        
-         
+    };
+    
+    const drawPaint = () =>
+    { 
          // draw the masterpiece background first
          const drawkeys = Object.keys(draws);
          
@@ -182,7 +175,7 @@
              ctx.translate(drawCall.x,drawCall.y);
              ctx.scale(1.5,1.5);
              ctx.fillStyle = drawCall.color;
-             ctx.fillRect(0 - (drawCall.width/ 2), 0 - (drawCall.height/ 2),drawCall.width,drawCall.height);
+             ctx.fillRect(0 - (drawCall.width/ 2), 0 - (drawCall.height/ 2),drawCall.width * .75,drawCall.height * .75);
              ctx.restore();
              
              rctx.save();
@@ -193,9 +186,13 @@
              rctx.restore();
          } 
          
-         const keys = Object.keys(squares);
+    };
+
+    const drawPlayers = () =>
+    {
+        const keys = Object.keys(squares);
          
-         for(let i = 0; i < keys.length; i++) {
+        for(let i = 0; i < keys.length; i++) {
          
            const square = squares[keys[i]];
              
@@ -206,88 +203,106 @@
          
          
            if(square.hash === hash) {
-             ctx.fillStyle = "blue";
+             ctx.fillStyle = "blue"; 
            }
            else {
-             ctx.fillStyle = "black";
+             ctx.fillStyle = "black"; 
            }
          
            square.x = lerp(square.prevX, square.destX, square.alpha);
            square.y = lerp(square.prevY, square.destY, square.alpha);
          
            
-           ctx.fillRect(square.x - 20, square.y - 20, 40,40);  
+            ctx.fillRect(square.x - 20, square.y - 20, 40,40);   
          }
+    };
+         
+    const redraw = (time) => {
+        updatePosition();
+        
+        const mySquare = squares[hash];
+ 
+        ctx.clearRect(0, 0, 500, 500);
+        rctx.clearRect(0,0,500,500);
+        
+        
+        ctx.save()
+        ctx.translate(-mySquare.camX + canvas.width/2, -mySquare.camY + canvas.height/2);
+             
+        drawBorder(); 
+        drawPaint();
+        drawPlayers();
+         
          ctx.restore();
          
          requestAnimationFrame(redraw);
-         };
+    };
          
-         const keyDownHandler = (e) => {
-             var keyPressed = e.which;
-         
-             // W OR UP
-             if(keyPressed === 87 || keyPressed === 38) {
-               moveUp = true;
-             }
-             // A OR LEFT
-             else if(keyPressed === 65 || keyPressed === 37) {
-               moveLeft = true;
-             }
-             // S OR DOWN
-             else if(keyPressed === 83 || keyPressed === 40) {
-               moveDown = true;
-             }
-             // D OR RIGHT
-             else if(keyPressed === 68 || keyPressed === 39) {
-               moveRight = true;
-             }
-             
-             //if one of these keys is down, let's cancel the browsers
-             //default action so the page doesn't try to scroll on the user
-             if(moveUp || moveDown || moveLeft || moveRight) {
-               e.preventDefault();
-             }
-         };
-         
-         const getRndColor = () =>{
-             var r = 255*Math.random()|0,
-             g = 255*Math.random()|0,
-             b = 255*Math.random()|0;
-             return 'rgb(' + r + ',' + g + ',' + b + ')';
+     const keyDownHandler = (e) => {
+         var keyPressed = e.which;
+
+         // W OR UP
+         if(keyPressed === 87 || keyPressed === 38) {
+           moveUp = true;
          }
-         
-         const keyUpHandler = (e) => {
-             var keyPressed = e.which;
-         
-             // W OR UP
-             if(keyPressed === 87 || keyPressed === 38) {
-               moveUp = false;
-             }
-             // A OR LEFT
-             else if(keyPressed === 65 || keyPressed === 37) {
-               moveLeft = false;
-             }
-             // S OR DOWN
-             else if(keyPressed === 83 || keyPressed === 40) {
-               moveDown = false;
-             }
-             // D OR RIGHT
-             else if(keyPressed === 68 || keyPressed === 39) {
-               moveRight = false;
-             }       
-         };
-         
-         const sendWithLag = () => {
-           socket.emit('movementUpdate', squares[hash]);
-         };
-         
-         const getMouse = (e) =>{
-            var mouse = {} // make an object
-         mouse.x = e.pageX - e.target.offsetLeft;
-         mouse.y = e.pageY - e.target.offsetTop;
-         return mouse;
+         // A OR LEFT
+         else if(keyPressed === 65 || keyPressed === 37) {
+           moveLeft = true;
          }
+         // S OR DOWN
+         else if(keyPressed === 83 || keyPressed === 40) {
+           moveDown = true;
+         }
+         // D OR RIGHT
+         else if(keyPressed === 68 || keyPressed === 39) {
+           moveRight = true;
+         }
+
+         //if one of these keys is down, let's cancel the browsers
+         //default action so the page doesn't try to scroll on the user
+         if(moveUp || moveDown || moveLeft || moveRight) {
+           e.preventDefault();
+         }
+     };
+         
+     const getRndColor = () =>{
+         var r = 255*Math.random()|0,
+         g = 255*Math.random()|0,
+         b = 255*Math.random()|0;
+         return 'rgb(' + r + ',' + g + ',' + b + ')';
+     };
+         
+     const keyUpHandler = (e) => {
+         var keyPressed = e.which;
+
+         // W OR UP
+         if(keyPressed === 87 || keyPressed === 38) {
+           moveUp = false;
+         }
+         // A OR LEFT
+         else if(keyPressed === 65 || keyPressed === 37) {
+           moveLeft = false;
+         }
+         // S OR DOWN
+         else if(keyPressed === 83 || keyPressed === 40) {
+           moveDown = false;
+         }
+         // D OR RIGHT
+         else if(keyPressed === 68 || keyPressed === 39) {
+           moveRight = false;
+         }       
+     };
+         
+     const sendWithLag = () => {
+       socket.emit('movementUpdate', squares[hash]);
+     };
+         
+     const getMouse = (e) =>{
+        var mouse = {} // make an object
+     mouse.x = e.pageX - e.target.offsetLeft;
+     mouse.y = e.pageY - e.target.offsetTop;
+     return mouse;
+     }
          
          const updateMouse = (e) =>
          {
@@ -302,16 +317,44 @@
              mouseState = false;
          }
          
+         const updateTimer = (t) => {
+             var h2Selector = document.querySelector("#timer");
+             h2Selector.innerHTML = "Time Left: " + Math.floor(t/1000); 
+         }
+ 
+         
+         const reset = (animal) => {
+             draws = {}; 
+             document.querySelector("#animal").innerHTML = "Draw: " + animal;
+             
+             
+             
+             // put our lovely drawing on the fridge 
+             var fridge = document.createElement('canvas');
+             fridge.width = 100;
+             fridge.height = 100;
+             
+             var fctx = fridge.getContext("2d");
+             fctx.save();
+             fctx.scale(.2,.2);
+             fctx.drawImage(result,0,0);
+             fctx.restore();
+             
+             var fridgeDiv = document.querySelector("#thefridge");
+             
+             fridgeDiv.insertBefore(fridge, fridgeDiv.childNodes[0]); 
+         }
+         
          const init = () => {
              canvas = document.querySelector("#canvas");
-             result = document.querySelector("#canvas2");
+             result = document.querySelector("#canvas2"); 
              ctx = canvas.getContext("2d");
-             rctx = result.getContext("2d");
+             rctx = result.getContext("2d"); 
          
              socket = io.connect();
              
              socket.on('connect', function () {
-               setInterval(sendWithLag, 40);
+               setInterval(sendWithLag, 40); 
                myColor = getRndColor();
              });  
              
@@ -325,23 +368,31 @@
              
              socket.on('left', removeUser);
              
+             socket.on('updateTime', updateTimer);
+             
+             socket.on('reset',reset);
+             
              document.body.addEventListener('keydown', keyDownHandler);
              document.body.addEventListener('keyup', keyUpHandler);
              canvas.onmousemove = updateMouse.bind(this); 
              canvas.onmousedown = mouseDown.bind(this);
              canvas.onmouseup = mouseUp.bind(this);
+             
          };
          
          window.onload = init;
       </script>
    </head>
    <body> 
-       <h1>Draw: An Elephant</h1>
-       <h2>Time Left: </h2>
-      <canvas id="canvas" height="500" width="500">Please use an HTML 5 browser</canvas>
+       <h1 id="animal">Draw: An Elephant</h1>
+       <h2 id="timer">Time Left: </h2>
+      <canvas class="canvas" id="canvas" height="500" width="500">Please use an HTML 5 browser</canvas>
        
-      <canvas id="canvas2" height="500" width="500">Please use an HTML 5 browser</canvas>
-      
+       <canvas class="canvas" id="canvas2" height="500" width="500">Please use an HTML 5 browser</canvas>
+      <p>WASD to move</p>
       <p>LMB to draw</p>
+       
+       <div id="thefridge"> </div>
+
    </body>
 </html>
