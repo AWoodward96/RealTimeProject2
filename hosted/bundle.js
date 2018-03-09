@@ -109,7 +109,7 @@ var keyDownHandler = function keyDownHandler(e) {
     var keyPressed = e.which;
 
     // W OR UP
-    if (keyPressed === 87 || keyPressed === 38) {
+    if (keyPressed === 87 || keyPressed === 38 || keyPressed === 32) {
         moveUp = true;
     }
     // A OR LEFT
@@ -143,7 +143,7 @@ var keyUpHandler = function keyUpHandler(e) {
     var keyPressed = e.which;
 
     // W OR UP
-    if (keyPressed === 87 || keyPressed === 38) {
+    if (keyPressed === 87 || keyPressed === 38 || keyPressed === 32) {
         moveUp = false;
     }
     // A OR LEFT
@@ -237,10 +237,10 @@ var updatePosition = function updatePosition() {
 
     // handle other movement 
     if (moveLeft && square.destX > 20) {
-        square.destX -= 5;
+        square.destX -= 10;
     }
     if (moveRight && square.destX < 980) {
-        square.destX += 5;
+        square.destX += 10;
     }
 
     square.camX = square.x;
