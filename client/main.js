@@ -36,7 +36,7 @@ const keyDownHandler = (e) => {
     var keyPressed = e.which;
 
     // W OR UP
-    if (keyPressed === 87 || keyPressed === 38) {
+    if (keyPressed === 87 || keyPressed === 38 || keyPressed===32) {
         moveUp = true;
     }
     // A OR LEFT
@@ -70,7 +70,7 @@ const keyUpHandler = (e) => {
     var keyPressed = e.which;
 
     // W OR UP
-    if (keyPressed === 87 || keyPressed === 38) {
+    if (keyPressed === 87 || keyPressed === 38 || keyPressed===32) {
         moveUp = false;
     }
     // A OR LEFT
