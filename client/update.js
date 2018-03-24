@@ -6,8 +6,7 @@ const update = (data) => {
         squares[data.hash] = data;
         return;
     }
-
-
+    
     const square = squares[data.hash];
 
     if (square.lastUpdate >= data.lastUpdate) {
@@ -19,7 +18,12 @@ const update = (data) => {
     square.prevY = data.prevY;
     square.destX = data.destX;
     square.destY = data.destY;
+    square.y = data.y;
+    square.x = data.x;
+    square.velX = data.velX;
+    square.velY = data.velY;
     square.alpha = 0.01; 
+    square.grounded = data.grounded;
 };
 
 const lerp = (v0, v1, alpha) => {
@@ -37,8 +41,8 @@ const updatePosition = () => {
     
      // Handle jump cd 
     if (moveUp && square.destY > 20) {
-        if(!jumpCD){
-            square.destY -= 120;
+        if(square.grounded && !jumpCD){
+            square.velY = -45;
             jumpCD = true;
         }
     }
@@ -46,19 +50,24 @@ const updatePosition = () => {
     if(jumpCD && !moveUp)
         jumpCD = false;
     
-   
+    
     // handle other movement 
     if (moveLeft && square.destX > 20) {
-        square.destX -= 10;
+        square.velX -= 2;
     }
     if (moveRight && square.destX < 980) {
-        square.destX += 10;
+        square.velX += 2;
     }
 
+    square.destX += square.velX;
+    square.destY += square.velY;
     square.camX = square.x;
     square.camY = square.y;
  
     square.alpha = 0.05;
+    
+    square.velX *= .9;
+    square.velY *= .9;
 
 };
 

@@ -13,21 +13,21 @@ const drawBorder = () => {
     ctx.restore();
 };
 
-const drawPaint = () => {
-    // draw the masterpiece background first
-    const drawkeys = Object.keys(draws);
 
-    for (let d = 0; d < drawkeys.length; d++) {
-        const drawCall = draws[drawkeys[d]];
-        ctx.save();
-        ctx.translate(drawCall.x, drawCall.y);
-        ctx.scale(1.5, 1.5);
-        ctx.fillStyle = drawCall.color;
-        ctx.fillRect(0 - (drawCall.width / 2), 0 - (drawCall.height / 2), drawCall.width * .75, drawCall.height * .75);
-        ctx.restore(); 
+
+const drawBoxes = () => {
+    for(let b = 0; b < box.length; b++)
+    {
+        ctx.fillStyle = "grey";
+        ctx.fillRect(box[b].x - box[b].width/2, 
+                     box[b].y - box[b].height/2, 
+                     box[b].width, 
+                     box[b].height);   
+        
+        ctx.fillStyle = "red";
+        ctx.fillRect(box[b].x,box[b].y,2,2);
     }
-
-};
+}
 
 const drawPlayers = () => {
     const keys = Object.keys(squares);
@@ -52,6 +52,10 @@ const drawPlayers = () => {
 
 
         ctx.fillRect(square.x - 20, square.y - 20, 40, 40);
+        
+        ctx.fillStyle = "red";
+        ctx.fillRect(square.x,square.y,2,2);
+        ctx.fillRect(square.x,square.y+24,2,2);
     }
 };
 
@@ -66,9 +70,9 @@ const redraw = (time) => {
     ctx.save()
     ctx.translate(-mySquare.camX + canvas.width / 2, -mySquare.camY + canvas.height / 2);
 
-    drawBorder();
-    drawPaint();
+    drawBorder(); 
     drawPlayers();
+    drawBoxes();
 
     ctx.restore();
 

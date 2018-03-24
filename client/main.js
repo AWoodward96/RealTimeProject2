@@ -16,6 +16,7 @@ let moveLeft = false;
 let squares = {};
 let mouse = {};
 let draws = {};
+let box = [];
 let myColor;
 let mouseState = false;
 
@@ -26,10 +27,12 @@ const removeUser = (hash) => {
     }
 };
 
-const setUser = (data) => {
+const setUser = (data, boxdata) => {
     hash = data.hash;
     squares[hash] = data;
     requestAnimationFrame(redraw); 
+    box = boxdata.splice(0);
+    console.log(box);
 }; 
 
 const keyDownHandler = (e) => {

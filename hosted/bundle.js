@@ -15,18 +15,13 @@ var drawBorder = function drawBorder() {
     ctx.restore();
 };
 
-var drawPaint = function drawPaint() {
-    // draw the masterpiece background first
-    var drawkeys = Object.keys(draws);
+var drawBoxes = function drawBoxes() {
+    for (var b = 0; b < box.length; b++) {
+        ctx.fillStyle = "grey";
+        ctx.fillRect(box[b].x - box[b].width / 2, box[b].y - box[b].height / 2, box[b].width, box[b].height);
 
-    for (var d = 0; d < drawkeys.length; d++) {
-        var drawCall = draws[drawkeys[d]];
-        ctx.save();
-        ctx.translate(drawCall.x, drawCall.y);
-        ctx.scale(1.5, 1.5);
-        ctx.fillStyle = drawCall.color;
-        ctx.fillRect(0 - drawCall.width / 2, 0 - drawCall.height / 2, drawCall.width * .75, drawCall.height * .75);
-        ctx.restore();
+        ctx.fillStyle = "red";
+        ctx.fillRect(box[b].x, box[b].y, 2, 2);
     }
 };
 
@@ -51,6 +46,10 @@ var drawPlayers = function drawPlayers() {
         square.y = lerp(square.prevY, square.destY, square.alpha);
 
         ctx.fillRect(square.x - 20, square.y - 20, 40, 40);
+
+        ctx.fillStyle = "red";
+        ctx.fillRect(square.x, square.y, 2, 2);
+        ctx.fillRect(square.x, square.y + 24, 2, 2);
     }
 };
 
@@ -65,8 +64,8 @@ var redraw = function redraw(time) {
     ctx.translate(-mySquare.camX + canvas.width / 2, -mySquare.camY + canvas.height / 2);
 
     drawBorder();
-    drawPaint();
     drawPlayers();
+    drawBoxes();
 
     ctx.restore();
 
@@ -90,6 +89,7 @@ var moveLeft = false;
 var squares = {};
 var mouse = {};
 var draws = {};
+var box = [];
 var myColor = void 0;
 var mouseState = false;
 
@@ -99,10 +99,12 @@ var removeUser = function removeUser(hash) {
     }
 };
 
-var setUser = function setUser(data) {
+var setUser = function setUser(data, boxdata) {
     hash = data.hash;
     squares[hash] = data;
     requestAnimationFrame(redraw);
+    box = boxdata.splice(0);
+    console.log(box);
 };
 
 var keyDownHandler = function keyDownHandler(e) {
@@ -211,7 +213,12 @@ var update = function update(data) {
     square.prevY = data.prevY;
     square.destX = data.destX;
     square.destY = data.destY;
+    square.y = data.y;
+    square.x = data.x;
+    square.velX = data.velX;
+    square.velY = data.velY;
     square.alpha = 0.01;
+    square.grounded = data.grounded;
 };
 
 var lerp = function lerp(v0, v1, alpha) {
@@ -227,8 +234,8 @@ var updatePosition = function updatePosition() {
 
     // Handle jump cd 
     if (moveUp && square.destY > 20) {
-        if (!jumpCD) {
-            square.destY -= 120;
+        if (square.grounded && !jumpCD) {
+            square.velY = -45;
             jumpCD = true;
         }
     }
@@ -237,14 +244,19 @@ var updatePosition = function updatePosition() {
 
     // handle other movement 
     if (moveLeft && square.destX > 20) {
-        square.destX -= 10;
+        square.velX -= 2;
     }
     if (moveRight && square.destX < 980) {
-        square.destX += 10;
+        square.velX += 2;
     }
 
+    square.destX += square.velX;
+    square.destY += square.velY;
     square.camX = square.x;
     square.camY = square.y;
 
     square.alpha = 0.05;
+
+    square.velX *= .9;
+    square.velY *= .9;
 };
