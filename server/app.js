@@ -29,24 +29,24 @@ let init = false;
 const boxes = [];
 
 const initBoxes = () => {
-  var temp = {};
+  const temp = {};
 
   temp.x = 0;
   temp.y = 700;
   temp.width = 1000;
   temp.height = 40;
   boxes.push(temp);
-  
-   
-  var b1 = {};
+
+
+  const b1 = {};
   b1.x = 600;
   b1.y = 930;
   b1.width = 1000;
   b1.height = 40;
   boxes.push(b1);
-  
- 
-  var b2 = {};
+
+
+  const b2 = {};
   b2.x = 1000;
   b2.y = 500;
   b2.width = 500;
@@ -58,24 +58,21 @@ const initialize = () => {
   initBoxes();
 };
 
-const boxCollision = (x1,y1,w1,h1,x2,y2,w2,h2) =>
-{
-    if(x1 < x2 + w2 && x1 + w1 > x2 && y1 < y2 +h2 && h1 + y1 > y2)
-        return true;
-    else
-        return false;
+const boxCollision = (x1, y1, w1, h1, x2, y2, w2, h2) => {
+  if (x1 < x2 + w2 && x1 + w1 > x2 && y1 < y2 + h2 && h1 + y1 > y2) { return true; }
+  return false;
 };
 
 const handlePhysics = (s) => {
-  const square = s;  
-  var grounded = false;
+  const square = s;
+  let grounded = false;
   for (let i = 0; i < boxes.length; i++) {
         // Handle collision
-      
-      const currentPosX = square.x - 20;
-      const currentPosY = square.y - 20;
-      const boxPosX = boxes[i].x- (boxes[i].width/2);
-      const boxPosY = boxes[i].y - (boxes[i].height/2);
+
+    const currentPosX = square.x - 20;
+    const currentPosY = square.y - 20;
+    const boxPosX = boxes[i].x - (boxes[i].width / 2);
+    const boxPosY = boxes[i].y - (boxes[i].height / 2);
     if (boxCollision(
                      currentPosX,
                      currentPosY,
@@ -84,37 +81,34 @@ const handlePhysics = (s) => {
                      boxPosX,
                      boxPosY,
                      boxes[i].width,
-                     boxes[i].height)) { 
-        
-        
+                     boxes[i].height)) {
       // get displacements
-      const xDisplacement = Math.abs(currentPosX - boxPosX);
+      // const xDisplacement = Math.abs(currentPosX - boxPosX);
       const yDisplacement = Math.abs(currentPosY - boxPosY);
-    const desiredyDisplacement = (boxes[i].height/2) + 20;
-    const desiredxDisplacement = (boxes[i].width/2) + 20;
-    
+      const desiredyDisplacement = (boxes[i].height / 2) + 20;
+      // const desiredxDisplacement = (boxes[i].width / 2) + 20;
+
     // If the y displacement is greater then half the extents of both boxes
-    if(yDisplacement < desiredyDisplacement)
-    {
-        var yVal = desiredyDisplacement - yDisplacement;
+      if (yDisplacement < desiredyDisplacement) {
+        const yVal = desiredyDisplacement - yDisplacement;
         // we need to resolve a y collision
-        if(currentPosY > boxPosY) // If we are currently beneath the box
-        {
-            square.y += yVal;
-        }else{ // If we're above the box
-            square.y -= yVal;
+        if (currentPosY > boxPosY) { // If we are currently beneath the box
+          square.y += yVal;
+        } else { // If we're above the box
+          square.y -= yVal;
         }
         square.velY = 0;
         square.destY = square.y;
-    }
-     
+      }
+
         /*
-        
+
         // Ok I know this section looks bad, especially because it's commented out but like
         // This code should make everything work except it doesn't.
         // I need a way to handle if the collision should be handled horizontally or virtically
-        // Because otherwise we get a massive issue where the positions jump around regardless of the collision
-        
+        // Because otherwise we get a massive issue where the positions
+        // jump around regardless of the collision
+
     // if the x displacement is greater then half the extents of both boxes
     if(xDisplacement < desiredxDisplacement)
     {
@@ -132,7 +126,7 @@ const handlePhysics = (s) => {
 
    */
         // Check this box for grounded
-        if(boxCollision(
+      if (boxCollision(
                      currentPosX,
                      currentPosY + 24,
                      2,
@@ -140,20 +134,18 @@ const handlePhysics = (s) => {
                      boxPosX,
                      boxPosY,
                      boxes[i].width,
-                     boxes[i].height)){
-            grounded = true; 
-        }
-        
+                     boxes[i].height)) {
+        grounded = true;
+      }
     }
   }
 
-    
+
   // Also let the player jump if on the ground
-  if(square.y >= 980)
-  {
-      grounded = true;
+  if (square.y >= 980) {
+    grounded = true;
   }
-    
+
   if (square.y < 980 && !grounded) { square.velY += 3; }
   square.grounded = grounded;
   return square;
@@ -185,7 +177,7 @@ io.on('connection', (sock) => {
     velX: 0,
     velY: 0,
     alpha: 0,
-    
+
     grounded: false,
   };
 
