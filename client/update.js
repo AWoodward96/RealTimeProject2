@@ -18,11 +18,11 @@ const update = (data) => {
     square.prevY = data.prevY;
     square.destX = data.destX;
     square.destY = data.destY;
-    square.y = data.y;
-    square.x = data.x;
+    //square.y = data.y;
+    //square.x = data.x;
     square.velX = data.velX;
     square.velY = data.velY;
-    square.alpha = 0.01; 
+    square.alpha = 0.01;
     square.grounded = data.grounded;
 };
 
