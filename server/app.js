@@ -73,6 +73,8 @@ const handlePhysics = (s) => {
     const currentPosY = square.y - 20;
     const boxPosX = boxes[i].x - (boxes[i].width / 2);
     const boxPosY = boxes[i].y - (boxes[i].height / 2);
+      
+      
     if (boxCollision(
                      currentPosX,
                      currentPosY,
@@ -84,11 +86,11 @@ const handlePhysics = (s) => {
                      boxes[i].height)) {
       // get displacements
       // const xDisplacement = Math.abs(currentPosX - boxPosX);
+      // const desiredxDisplacement = (boxes[i].width / 2) + 20;
       const yDisplacement = Math.abs(currentPosY - boxPosY);
       const desiredyDisplacement = (boxes[i].height / 2) + 20;
-      // const desiredxDisplacement = (boxes[i].width / 2) + 20;
 
-    // If the y displacement is greater then half the extents of both boxes
+      // If the y displacement is greater then half the extents of both boxes
       if (yDisplacement < desiredyDisplacement) {
         const yVal = desiredyDisplacement - yDisplacement;
         // we need to resolve a y collision

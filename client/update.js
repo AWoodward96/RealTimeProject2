@@ -13,9 +13,6 @@ const update = (data) => {
         return;
     }
 
-    if(data.hash == hash)
-        return;
-    
     square.lastUpdate = data.lastUpdate; 
     square.prevX = data.prevX;
     square.prevY = data.prevY;
@@ -72,5 +69,7 @@ const updatePosition = () => {
     square.velX *= .9;
     square.velY *= .9;
 
+    
+    socket.emit('movementUpdate', squares[hash]);
 };
 

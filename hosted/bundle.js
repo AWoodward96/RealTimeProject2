@@ -90,7 +90,6 @@ var squares = {};
 var mouse = {};
 var draws = {};
 var box = [];
-var myColor = void 0;
 var mouseState = false;
 
 var removeUser = function removeUser(hash) {
@@ -134,13 +133,6 @@ var keyDownHandler = function keyDownHandler(e) {
     }
 };
 
-var getRndColor = function getRndColor() {
-    var r = 255 * Math.random() | 0,
-        g = 255 * Math.random() | 0,
-        b = 255 * Math.random() | 0;
-    return 'rgb(' + r + ',' + g + ',' + b + ')';
-};
-
 var keyUpHandler = function keyUpHandler(e) {
     var keyPressed = e.which;
 
@@ -162,20 +154,14 @@ var keyUpHandler = function keyUpHandler(e) {
                 }
 };
 
-var sendWithLag = function sendWithLag() {
-    socket.emit('movementUpdate', squares[hash]);
-};
-
 var init = function init() {
     canvas = document.querySelector("#canvas");
     ctx = canvas.getContext("2d");
 
     socket = io.connect();
 
-    socket.on('connect', function () {
-        setInterval(sendWithLag, 40);
-        myColor = getRndColor();
-    });
+    //socket.on('connect', function() { 
+    //});
 
     socket.on('updateDraws', function (data) {
         draws[data.time] = data.coords;
@@ -192,7 +178,7 @@ var init = function init() {
 };
 
 window.onload = init;
-"use strict";
+'use strict';
 
 var jumpCD = false;
 
@@ -207,8 +193,6 @@ var update = function update(data) {
     if (square.lastUpdate >= data.lastUpdate) {
         return;
     }
-
-    if (data.hash == hash) return;
 
     square.lastUpdate = data.lastUpdate;
     square.prevX = data.prevX;
@@ -261,4 +245,6 @@ var updatePosition = function updatePosition() {
 
     square.velX *= .9;
     square.velY *= .9;
+
+    socket.emit('movementUpdate', squares[hash]);
 };

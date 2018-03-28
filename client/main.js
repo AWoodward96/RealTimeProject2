@@ -16,8 +16,7 @@ let moveLeft = false;
 let squares = {};
 let mouse = {};
 let draws = {};
-let box = [];
-let myColor;
+let box = []; 
 let mouseState = false;
 
 
@@ -62,13 +61,6 @@ const keyDownHandler = (e) => {
     }
 };
 
-const getRndColor = () => {
-    var r = 255 * Math.random() | 0,
-        g = 255 * Math.random() | 0,
-        b = 255 * Math.random() | 0;
-    return 'rgb(' + r + ',' + g + ',' + b + ')';
-};
-
 const keyUpHandler = (e) => {
     var keyPressed = e.which;
 
@@ -90,9 +82,6 @@ const keyUpHandler = (e) => {
     }
 };
 
-const sendWithLag = () => {
-    socket.emit('movementUpdate', squares[hash]);
-};
 
 const init = () => {
     canvas = document.querySelector("#canvas"); 
@@ -100,10 +89,8 @@ const init = () => {
 
     socket = io.connect();
 
-    socket.on('connect', function() {
-        setInterval(sendWithLag, 40);
-        myColor = getRndColor();
-    });
+    //socket.on('connect', function() { 
+    //});
 
     socket.on('updateDraws', (data) => {
         draws[data.time] = data.coords;
