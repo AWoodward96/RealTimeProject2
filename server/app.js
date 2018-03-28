@@ -195,12 +195,6 @@ io.on('connection', (sock) => {
     socket.square = data;
     socket.square.lastUpdate = new Date().getTime();
 
-
-    // check position of object. If greater than the bottom screen limit then make it fall
-    // if (socket.square.y >= 980) {
-    //  socket.square.y = 980; socket.square.prevY = 980;
-    //  socket.square.destY = 980; socket.square.velY = 0;
-    // }
     socket.square = handlePhysics(socket.square);
 
     io.sockets.in('room1').emit('updatedMovement', socket.square);

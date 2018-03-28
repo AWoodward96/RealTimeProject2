@@ -208,6 +208,8 @@ var update = function update(data) {
         return;
     }
 
+    if (data.hash == hash) return;
+
     square.lastUpdate = data.lastUpdate;
     square.prevX = data.prevX;
     square.prevY = data.prevY;
