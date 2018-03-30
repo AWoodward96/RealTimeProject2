@@ -71,6 +71,7 @@ const runPhysics = (s) => {
         } else { // If we're above the box
           square.prevY -= yVal;
         }  
+        square.velY = 0;
         square.destY = square.prevY;
       }
  
