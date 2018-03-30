@@ -258,6 +258,7 @@ var runPhysics = function runPhysics(s) {
                     // If we're above the box
                     square.y -= yVal;
                 }
+                square.velY = 0;
                 square.destY = square.y;
             }
 
