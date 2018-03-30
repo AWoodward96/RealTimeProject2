@@ -58,15 +58,13 @@ const initialize = () => {
   initBoxes();
 };
 
-/*
+
 const boxCollision = (x1, y1, w1, h1, x2, y2, w2, h2) => {
   if (x1 < x2 + w2 && x1 + w1 > x2 && y1 < y2 + h2 && h1 + y1 > y2) { return true; }
   return false;
 };
 
-*/
 
-/*
 const handlePhysics = (s) => {
   const square = s;
   let grounded = false;
@@ -114,7 +112,7 @@ const handlePhysics = (s) => {
         // Because otherwise we get a massive issue where the positions
         // jump around regardless of the collision
 
-
+/*
     // if the x displacement is greater then half the extents of both boxes
       if (xDisplacement < desiredxDisplacement) {
         const xVal = desiredxDisplacement - xDisplacement;
@@ -129,6 +127,7 @@ const handlePhysics = (s) => {
         square.destX = square.x;
       }
 
+*/
 
         // Check this box for grounded
       if (boxCollision(
@@ -155,7 +154,6 @@ const handlePhysics = (s) => {
   square.grounded = grounded;
   return square;
 };
-*/
 
 io.on('connection', (sock) => {
   const socket = sock;
@@ -204,15 +202,6 @@ io.on('connection', (sock) => {
     // socket.square = handlePhysics(socket.square);
 
     socket.broadcast.to('room1').emit('updatedMovement', socket.square);
-  });
-
-  socket.on('draw', (data) => {
-    if (data.time > socket.draws.lastUpdate) {
-      socket.draws.lastUpdate = data.time;
-      socket.draws.x = data.x;
-      socket.draws.y = data.y;
-      io.sockets.in('room1').emit('updateDraws', data);
-    }
   });
 
   socket.on('disconnect', () => {
