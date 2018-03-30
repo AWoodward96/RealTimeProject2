@@ -191,7 +191,7 @@ var init = function init() {
 };
 
 window.onload = init;
-"use strict";
+'use strict';
 
 var jumpCD = false;
 
@@ -258,13 +258,11 @@ var runPhysics = function runPhysics(s) {
                     // If we're above the box
                     square.prevY -= yVal;
                 }
-                square.velY = 0;
                 square.destY = square.prevY;
             }
 
             // Check this box for grounded
             if (boxCollision(currentPosX, currentPosY + 24, 2, 16, boxPosX, boxPosY, boxes[i].width, boxes[i].height)) {
-                console.log("is grounded");
                 grounded = true;
             }
         }
@@ -315,7 +313,7 @@ var updatePosition = function updatePosition() {
     square.camX = square.x;
     square.camY = square.y;
 
-    square.alpha = 0.1;
+    square.alpha = 0.05;
 
     square.velX *= .9;
     square.velY *= .9;

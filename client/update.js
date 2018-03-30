@@ -70,8 +70,7 @@ const runPhysics = (s) => {
           square.prevY += yVal;
         } else { // If we're above the box
           square.prevY -= yVal;
-        } 
-        square.velY = 0;
+        }  
         square.destY = square.prevY;
       }
  
@@ -85,8 +84,7 @@ const runPhysics = (s) => {
                      boxPosX,
                      boxPosY,
                      boxes[i].width,
-                     boxes[i].height)) {
-        console.log("is grounded");
+                     boxes[i].height)) { 
         grounded = true;
       }
     }
@@ -141,7 +139,7 @@ const updatePosition = () => {
     square.camX = square.x;
     square.camY = square.y;
 
-    square.alpha = 0.1;
+    square.alpha = 0.05;
     
     square.velX *= .9;
     square.velY *= .9;
