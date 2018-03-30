@@ -58,11 +58,15 @@ const initialize = () => {
   initBoxes();
 };
 
+/*
 const boxCollision = (x1, y1, w1, h1, x2, y2, w2, h2) => {
   if (x1 < x2 + w2 && x1 + w1 > x2 && y1 < y2 + h2 && h1 + y1 > y2) { return true; }
   return false;
 };
 
+*/
+
+/*
 const handlePhysics = (s) => {
   const square = s;
   let grounded = false;
@@ -73,8 +77,8 @@ const handlePhysics = (s) => {
     const currentPosY = square.y - 20;
     const boxPosX = boxes[i].x - (boxes[i].width / 2);
     const boxPosY = boxes[i].y - (boxes[i].height / 2);
-      
-      
+
+
     if (boxCollision(
                      currentPosX,
                      currentPosY,
@@ -103,7 +107,6 @@ const handlePhysics = (s) => {
         square.destY = square.y;
       }
 
-        /*
 
         // Ok I know this section looks bad, especially because it's commented out but like
         // This code should make everything work except it doesn't.
@@ -111,22 +114,22 @@ const handlePhysics = (s) => {
         // Because otherwise we get a massive issue where the positions
         // jump around regardless of the collision
 
+
     // if the x displacement is greater then half the extents of both boxes
-    if(xDisplacement < desiredxDisplacement)
-    {
-        var xVal = desiredxDisplacement - xDisplacement;
+      if (xDisplacement < desiredxDisplacement) {
+        const xVal = desiredxDisplacement - xDisplacement;
         // we need to resolve an x collision
-        if(currentPosX > boxPosX) // We're on the right of a box
+        if (currentPosX > boxPosX) // We're on the right of a box
         {
-            square.x += xVal;
-        }else{ // We're on the left of the box
-            square.x -= xVal;
+          square.x += xVal;
+        } else { // We're on the left of the box
+          square.x -= xVal;
         }
         square.velX = 0;
         square.destX = square.x;
-    }
+      }
 
-   */
+
         // Check this box for grounded
       if (boxCollision(
                      currentPosX,
@@ -152,6 +155,7 @@ const handlePhysics = (s) => {
   square.grounded = grounded;
   return square;
 };
+*/
 
 io.on('connection', (sock) => {
   const socket = sock;
@@ -197,7 +201,7 @@ io.on('connection', (sock) => {
     socket.square = data;
     socket.square.lastUpdate = new Date().getTime();
 
-    socket.square = handlePhysics(socket.square);
+    // socket.square = handlePhysics(socket.square);
 
     io.sockets.in('room1').emit('updatedMovement', socket.square);
   });

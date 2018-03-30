@@ -16,12 +16,12 @@ var drawBorder = function drawBorder() {
 };
 
 var drawBoxes = function drawBoxes() {
-    for (var b = 0; b < box.length; b++) {
+    for (var b = 0; b < boxes.length; b++) {
         ctx.fillStyle = "grey";
-        ctx.fillRect(box[b].x - box[b].width / 2, box[b].y - box[b].height / 2, box[b].width, box[b].height);
+        ctx.fillRect(boxes[b].x - boxes[b].width / 2, boxes[b].y - boxes[b].height / 2, boxes[b].width, boxes[b].height);
 
         ctx.fillStyle = "red";
-        ctx.fillRect(box[b].x, box[b].y, 2, 2);
+        ctx.fillRect(boxes[b].x, boxes[b].y, 2, 2);
     }
 };
 
@@ -89,7 +89,8 @@ var moveLeft = false;
 var squares = {};
 var mouse = {};
 var draws = {};
-var box = [];
+var boxes = [];
+var myColor = void 0;
 var mouseState = false;
 
 var removeUser = function removeUser(hash) {
@@ -102,8 +103,7 @@ var setUser = function setUser(data, boxdata) {
     hash = data.hash;
     squares[hash] = data;
     requestAnimationFrame(redraw);
-    box = boxdata.splice(0);
-    console.log(box);
+    boxes = boxdata.splice(0);
 };
 
 var keyDownHandler = function keyDownHandler(e) {
@@ -133,6 +133,13 @@ var keyDownHandler = function keyDownHandler(e) {
     }
 };
 
+var getRndColor = function getRndColor() {
+    var r = 255 * Math.random() | 0,
+        g = 255 * Math.random() | 0,
+        b = 255 * Math.random() | 0;
+    return 'rgb(' + r + ',' + g + ',' + b + ')';
+};
+
 var keyUpHandler = function keyUpHandler(e) {
     var keyPressed = e.which;
 
@@ -154,14 +161,20 @@ var keyUpHandler = function keyUpHandler(e) {
                 }
 };
 
+var sendWithLag = function sendWithLag() {
+    socket.emit('movementUpdate', squares[hash]);
+};
+
 var init = function init() {
     canvas = document.querySelector("#canvas");
     ctx = canvas.getContext("2d");
 
     socket = io.connect();
 
-    //socket.on('connect', function() { 
-    //});
+    socket.on('connect', function () {
+        setInterval(sendWithLag, 40);
+        myColor = getRndColor();
+    });
 
     socket.on('updateDraws', function (data) {
         draws[data.time] = data.coords;
@@ -178,7 +191,7 @@ var init = function init() {
 };
 
 window.onload = init;
-'use strict';
+"use strict";
 
 var jumpCD = false;
 
@@ -199,8 +212,6 @@ var update = function update(data) {
     square.prevY = data.prevY;
     square.destX = data.destX;
     square.destY = data.destY;
-    //square.y = data.y;
-    //square.x = data.x;
     square.velX = data.velX;
     square.velY = data.velY;
     square.alpha = 0.01;
@@ -211,8 +222,70 @@ var lerp = function lerp(v0, v1, alpha) {
     return (1 - alpha) * v0 + alpha * v1;
 };
 
+var boxCollision = function boxCollision(x1, y1, w1, h1, x2, y2, w2, h2) {
+    if (x1 < x2 + w2 && x1 + w1 > x2 && y1 < y2 + h2 && h1 + y1 > y2) {
+        return true;
+    }
+    return false;
+};
+
+var runPhysics = function runPhysics(s) {
+    var square = s;
+    var grounded = false;
+    for (var i = 0; i < boxes.length; i++) {
+        // Handle collision
+
+        var currentPosX = square.x - 20;
+        var currentPosY = square.y - 20;
+        var boxPosX = boxes[i].x - boxes[i].width / 2;
+        var boxPosY = boxes[i].y - boxes[i].height / 2;
+
+        if (boxCollision(currentPosX, currentPosY, 40, 40, boxPosX, boxPosY, boxes[i].width, boxes[i].height)) {
+            // get displacements
+            //const xDisplacement = Math.abs(currentPosX - boxPosX);
+            //const desiredxDisplacement = (boxes[i].width / 2) + 20;
+            var yDisplacement = Math.abs(currentPosY - boxPosY);
+            var desiredyDisplacement = boxes[i].height / 2 + 20;
+
+            // If the y displacement is greater then half the extents of both boxes
+            if (yDisplacement < desiredyDisplacement) {
+                var yVal = desiredyDisplacement - yDisplacement;
+                // we need to resolve a y collision
+                if (currentPosY > boxPosY) {
+                    // If we are currently beneath the box
+                    square.y += yVal;
+                } else {
+                    // If we're above the box
+                    square.y -= yVal;
+                }
+                square.destY = square.y;
+            }
+
+            // Check this box for grounded
+            if (boxCollision(currentPosX, currentPosY + 24, 2, 16, boxPosX, boxPosY, boxes[i].width, boxes[i].height)) {
+                console.log("is grounded");
+                grounded = true;
+            }
+        }
+    }
+
+    // Also let the player jump if on the ground
+    if (square.y >= 980) {
+        grounded = true;
+    }
+
+    if (square.y < 980 && !grounded) {
+        square.velY += 3;
+    }
+    square.grounded = grounded;
+    return square;
+};
+
 var updatePosition = function updatePosition() {
     var square = squares[hash];
+
+    // Update physics locally
+    square = runPhysics(square);
 
     // Keep track of the last positions
     square.prevX = square.x;
@@ -245,6 +318,4 @@ var updatePosition = function updatePosition() {
 
     square.velX *= .9;
     square.velY *= .9;
-
-    socket.emit('movementUpdate', squares[hash]);
 };

@@ -16,16 +16,16 @@ const drawBorder = () => {
 
 
 const drawBoxes = () => {
-    for(let b = 0; b < box.length; b++)
+    for(let b = 0; b < boxes.length; b++)
     {
         ctx.fillStyle = "grey";
-        ctx.fillRect(box[b].x - box[b].width/2, 
-                     box[b].y - box[b].height/2, 
-                     box[b].width, 
-                     box[b].height);   
+        ctx.fillRect(boxes[b].x - boxes[b].width/2, 
+                     boxes[b].y - boxes[b].height/2, 
+                     boxes[b].width, 
+                     boxes[b].height);   
         
         ctx.fillStyle = "red";
-        ctx.fillRect(box[b].x,box[b].y,2,2);
+        ctx.fillRect(boxes[b].x,boxes[b].y,2,2);
     }
 }
 
