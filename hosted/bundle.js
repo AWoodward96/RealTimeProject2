@@ -253,13 +253,12 @@ var runPhysics = function runPhysics(s) {
                 // we need to resolve a y collision
                 if (currentPosY > boxPosY) {
                     // If we are currently beneath the box
-                    square.y += yVal;
+                    square.destY += yVal;
                 } else {
                     // If we're above the box
-                    square.y -= yVal;
+                    square.destY -= yVal;
                 }
                 square.velY = 0;
-                square.destY = square.y;
             }
 
             // Check this box for grounded
