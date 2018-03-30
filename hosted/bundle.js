@@ -253,12 +253,13 @@ var runPhysics = function runPhysics(s) {
                 // we need to resolve a y collision
                 if (currentPosY > boxPosY) {
                     // If we are currently beneath the box
-                    square.destY += yVal;
+                    square.y += yVal;
                 } else {
                     // If we're above the box
-                    square.destY -= yVal;
+                    square.y -= yVal;
                 }
                 square.velY = 0;
+                square.destY = square.y;
             }
 
             // Check this box for grounded
@@ -275,7 +276,7 @@ var runPhysics = function runPhysics(s) {
     }
 
     if (square.y < 980 && !grounded) {
-        square.velY += 3;
+        square.velY += 2;
     }
     square.grounded = grounded;
     return square;
@@ -294,7 +295,7 @@ var updatePosition = function updatePosition() {
     // Handle jump cd 
     if (moveUp && square.destY > 20) {
         if (square.grounded && !jumpCD) {
-            square.velY = -45;
+            square.velY = -50;
             jumpCD = true;
         }
     }
@@ -314,7 +315,7 @@ var updatePosition = function updatePosition() {
     square.camX = square.x;
     square.camY = square.y;
 
-    square.alpha = 0.05;
+    square.alpha = 0.1;
 
     square.velX *= .9;
     square.velY *= .9;
