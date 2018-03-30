@@ -161,9 +161,9 @@ var keyUpHandler = function keyUpHandler(e) {
                 }
 };
 
-var sendWithLag = function sendWithLag() {
+/*const sendWithLag = () => {
     socket.emit('movementUpdate', squares[hash]);
-};
+};*/
 
 var init = function init() {
     canvas = document.querySelector("#canvas");
@@ -172,7 +172,7 @@ var init = function init() {
     socket = io.connect();
 
     socket.on('connect', function () {
-        setInterval(sendWithLag, 16);
+        //setInterval(sendWithLag, 16);
         myColor = getRndColor();
     });
 
@@ -295,7 +295,7 @@ var updatePosition = function updatePosition() {
     // Handle jump cd 
     if (moveUp && square.destY > 20) {
         if (square.grounded && !jumpCD) {
-            square.velY = -50;
+            square.velY = -60;
             jumpCD = true;
         }
     }
@@ -319,4 +319,6 @@ var updatePosition = function updatePosition() {
 
     square.velX *= .9;
     square.velY *= .9;
+
+    socket.emit('movementUpdate', square);
 };

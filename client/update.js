@@ -119,7 +119,7 @@ const updatePosition = () => {
      // Handle jump cd 
     if (moveUp && square.destY > 20) {
         if(square.grounded && !jumpCD){ 
-            square.velY = -50;
+            square.velY = -60;
             jumpCD = true;
         }
     }
@@ -146,6 +146,6 @@ const updatePosition = () => {
     square.velX *= .9;
     square.velY *= .9;
 
-    
+    socket.emit('movementUpdate', square);
 };
 

@@ -89,9 +89,9 @@ const keyUpHandler = (e) => {
     }
 };
 
-const sendWithLag = () => {
+/*const sendWithLag = () => {
     socket.emit('movementUpdate', squares[hash]);
-};
+};*/
 
 const init = () => {
     canvas = document.querySelector("#canvas"); 
@@ -100,7 +100,7 @@ const init = () => {
     socket = io.connect();
 
     socket.on('connect', function() {
-        setInterval(sendWithLag, 16);
+        //setInterval(sendWithLag, 16);
         myColor = getRndColor();
     });
 
