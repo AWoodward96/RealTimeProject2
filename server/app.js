@@ -203,7 +203,7 @@ io.on('connection', (sock) => {
 
     // socket.square = handlePhysics(socket.square);
 
-    io.sockets.in('room1').emit('updatedMovement', socket.square);
+    socket.broadcast.to('room1').emit('updatedMovement', socket.square);
   });
 
   socket.on('draw', (data) => {
