@@ -100,7 +100,7 @@ const init = () => {
     socket = io.connect();
 
     socket.on('connect', function() {
-        setInterval(sendWithLag, 40);
+        setInterval(sendWithLag, 16);
         myColor = getRndColor();
     });
 
