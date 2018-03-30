@@ -197,9 +197,8 @@ io.on('connection', (sock) => {
 
   socket.on('movementUpdate', (data) => {
     socket.square = data;
+      
     socket.square.lastUpdate = new Date().getTime();
-
-    // socket.square = handlePhysics(socket.square);
 
     socket.broadcast.to('room1').emit('updatedMovement', socket.square);
   });
@@ -210,3 +209,18 @@ io.on('connection', (sock) => {
     socket.leave('room1');
   });
 });
+
+const CheckPositions = () =>
+{
+    // Make sure each player is actually in a valid position
+    var arrOfSockets = io.sockets.sockets;
+    for(var i = 0; i < arrOfSockets.length; i++)
+    {
+        var square = arrOfSockets[i].square;
+        square = handlePhysics(square);
+        arrOfSockets[i].$broadcast.to('room1').emit('updateMovement',sockets.square);
+    }
+    
+}
+
+setInterval(CheckPositions, 40);
