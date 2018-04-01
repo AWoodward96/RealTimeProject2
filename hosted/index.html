@@ -11,33 +11,37 @@
          padding:0;
          }
           
-          h1{
-              
-            margin-left: 35px;
-          }    
-          h2{
-              
-            margin-left: 35px;
-          }
-         .canvas {
-            margin-left: 35px;
+          
+         .canvas { 
             border: 1px solid black; 
          }
-         p {
-         margin-left: 35px;
-         font-size: 1.2em;
-         width: 50%; 
-         }
+         
       </style>
       <script src="/socket.io/socket.io.js"></script>  
       <script src="bundle.js"></script> 
    </head>
-   <body> 
-       <br/><br/>
-      <canvas class="canvas" id="canvas" height="500" width="500">Please use an HTML 5 browser</canvas>
- 
-      <p>WASD to move</p> 
-      <p>Space to jump</p>
+   <body>
+       
+       <div style="text-align: center">
+            <h1>Online Tag!</h1>
+            <br/><br/>
+
+            <div style="width: 50%; margin: 0 auto;">
+                <canvas class="canvas" id="canvas" height="500" width="500">Please use an HTML 5 browser</canvas>
+
+            </div>
+           
+            <p>WASD to move</p> 
+            <p>Space to jump</p>
+            <p>Blue = You</p>
+            <p>Black = Other Players</p>
+            <br/>
+            <p>Orange = It</p>
+            <p>Grey = Can't be it [3s]</p> 
+       </div>
+      
+       
+
         
 
    </body>
