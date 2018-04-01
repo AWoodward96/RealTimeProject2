@@ -24,6 +24,8 @@ const update = (data) => {
     square.velY = data.velY;
     square.alpha = 0.01;
     square.grounded = data.grounded;
+    square.isIt = data.isIt;
+    square.canBeIt = data.canBeIt;
 };
 
 const lerp = (v0, v1, alpha) => {

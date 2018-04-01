@@ -2,8 +2,7 @@
 
 let canvas;
 let result;
-let ctx;
-let rctx;
+let ctx; 
 
 //our websocket connection
 let socket;
@@ -13,12 +12,8 @@ let moveUp = false;
 let moveRight = false;
 let moveLeft = false;
 
-let squares = {};
-let mouse = {};
-let draws = {};
-let boxes = [];
-let myColor;
-let mouseState = false;
+let squares = {}; 
+let boxes = [];  
 
 
 const removeUser = (hash) => {
@@ -32,6 +27,7 @@ const setUser = (data, boxdata) => {
     squares[hash] = data;
     requestAnimationFrame(redraw); 
     boxes = boxdata.splice(0); 
+    console.log(hash);
 }; 
 
 const keyDownHandler = (e) => {
@@ -61,12 +57,25 @@ const keyDownHandler = (e) => {
     }
 };
 
-const getRndColor = () => {
-    var r = 255 * Math.random() | 0,
-        g = 255 * Math.random() | 0,
-        b = 255 * Math.random() | 0;
-    return 'rgb(' + r + ',' + g + ',' + b + ')';
-};
+
+const handleTag = (noLongerIt, isNowIt) => { 
+    
+    // If the old square is available
+    if(squares[noLongerIt]){ 
+        squares[noLongerIt].isIt = false;
+        squares[noLongerIt].canBeIt = false;
+    }
+    
+    console.log(isNowIt);
+    // If the new square is available
+    if(squares[isNowIt])
+        squares[isNowIt].isIt = true;
+    else
+        console.log("NO NEW SQUARE AVAILABLE");
+    
+    if(noLongerIt == hash)
+        setTimeout(function(){squares[hash].canBeIt = true;},3000);
+}
 
 const keyUpHandler = (e) => {
     var keyPressed = e.which;
@@ -88,10 +97,7 @@ const keyUpHandler = (e) => {
         moveRight = false;
     }
 };
-
-/*const sendWithLag = () => {
-    socket.emit('movementUpdate', squares[hash]);
-};*/
+ 
 
 const init = () => {
     canvas = document.querySelector("#canvas"); 
@@ -99,20 +105,13 @@ const init = () => {
 
     socket = io.connect();
 
-    socket.on('connect', function() {
-        //setInterval(sendWithLag, 16);
-        myColor = getRndColor();
-    });
-
-    socket.on('updateDraws', (data) => {
-        draws[data.time] = data.coords;
-    });
-
     socket.on('joined', setUser);
 
     socket.on('updatedMovement', update);
 
     socket.on('left', removeUser); 
+    
+    socket.on('tag', handleTag);
 
     document.body.addEventListener('keydown', keyDownHandler);
     document.body.addEventListener('keyup', keyUpHandler); 

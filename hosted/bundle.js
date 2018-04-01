@@ -42,6 +42,10 @@ var drawPlayers = function drawPlayers() {
             ctx.fillStyle = "black";
         }
 
+        if (square.isIt) ctx.fillStyle = "orange";
+
+        if (!square.canBeIt) ctx.fillStyle = "gray";
+
         square.x = lerp(square.prevX, square.destX, square.alpha);
         square.y = lerp(square.prevY, square.destY, square.alpha);
 
@@ -76,7 +80,6 @@ var redraw = function redraw(time) {
 var canvas = void 0;
 var result = void 0;
 var ctx = void 0;
-var rctx = void 0;
 
 //our websocket connection
 var socket = void 0;
@@ -87,11 +90,7 @@ var moveRight = false;
 var moveLeft = false;
 
 var squares = {};
-var mouse = {};
-var draws = {};
 var boxes = [];
-var myColor = void 0;
-var mouseState = false;
 
 var removeUser = function removeUser(hash) {
     if (squares[hash]) {
@@ -104,6 +103,7 @@ var setUser = function setUser(data, boxdata) {
     squares[hash] = data;
     requestAnimationFrame(redraw);
     boxes = boxdata.splice(0);
+    console.log(hash);
 };
 
 var keyDownHandler = function keyDownHandler(e) {
@@ -133,11 +133,21 @@ var keyDownHandler = function keyDownHandler(e) {
     }
 };
 
-var getRndColor = function getRndColor() {
-    var r = 255 * Math.random() | 0,
-        g = 255 * Math.random() | 0,
-        b = 255 * Math.random() | 0;
-    return 'rgb(' + r + ',' + g + ',' + b + ')';
+var handleTag = function handleTag(noLongerIt, isNowIt) {
+
+    // If the old square is available
+    if (squares[noLongerIt]) {
+        squares[noLongerIt].isIt = false;
+        squares[noLongerIt].canBeIt = false;
+    }
+
+    console.log(isNowIt);
+    // If the new square is available
+    if (squares[isNowIt]) squares[isNowIt].isIt = true;else console.log("NO NEW SQUARE AVAILABLE");
+
+    if (noLongerIt == hash) setTimeout(function () {
+        squares[hash].canBeIt = true;
+    }, 3000);
 };
 
 var keyUpHandler = function keyUpHandler(e) {
@@ -161,30 +171,19 @@ var keyUpHandler = function keyUpHandler(e) {
                 }
 };
 
-/*const sendWithLag = () => {
-    socket.emit('movementUpdate', squares[hash]);
-};*/
-
 var init = function init() {
     canvas = document.querySelector("#canvas");
     ctx = canvas.getContext("2d");
 
     socket = io.connect();
 
-    socket.on('connect', function () {
-        //setInterval(sendWithLag, 16);
-        myColor = getRndColor();
-    });
-
-    socket.on('updateDraws', function (data) {
-        draws[data.time] = data.coords;
-    });
-
     socket.on('joined', setUser);
 
     socket.on('updatedMovement', update);
 
     socket.on('left', removeUser);
+
+    socket.on('tag', handleTag);
 
     document.body.addEventListener('keydown', keyDownHandler);
     document.body.addEventListener('keyup', keyUpHandler);
@@ -218,6 +217,8 @@ var update = function update(data) {
     square.velY = data.velY;
     square.alpha = 0.01;
     square.grounded = data.grounded;
+    square.isIt = data.isIt;
+    square.canBeIt = data.canBeIt;
 };
 
 var lerp = function lerp(v0, v1, alpha) {

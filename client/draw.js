@@ -47,6 +47,12 @@ const drawPlayers = () => {
             ctx.fillStyle = "black";
         }
 
+        if(square.isIt)
+            ctx.fillStyle = "orange";
+        
+        if(!square.canBeIt)
+            ctx.fillStyle = "gray";
+        
         square.x = lerp(square.prevX, square.destX, square.alpha);
         square.y = lerp(square.prevY, square.destY, square.alpha);
 
